@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title %> · <%= appName %></title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<% if (user) { %>
+<header class="topbar">
+  <a class="brand" href="/"><span class="logo">▶</span> <%= appName %></a>
+  <nav>
+    <a href="/" class="<%= path === '/' ? 'active' : '' %>">Kurse</a>
+    <% if (user.role === 'admin') { %>
+      <a href="/admin" class="<%= path.startsWith('/admin') ? 'active' : '' %>">Admin</a>
+    <% } %>
+    <a href="/profil" class="<%= path === '/profil' ? 'active' : '' %>"><%= user.name.split(' ')[0] %></a>
+    <form method="post" action="/logout" class="inline">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <button class="link">Abmelden</button>
+    </form>
+  </nav>
+</header>
+<% } %>
+<main class="<%= typeof wide !== 'undefined' && wide ? 'wide' : '' %>">
+<% if (flash) { %><div class="flash <%= flash.type %>"><%= flash.text %></div><% } %>

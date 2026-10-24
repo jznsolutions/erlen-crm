@@ -1,0 +1,71 @@
+<%- include('../partials/head') %>
+<a class="back" href="/admin/mitarbeiter">← Mitarbeiter</a>
+<h1><%= member.name %> <% if (!member.active) { %><span class="badge draft inline-badge">inaktiv</span><% } %></h1>
+<p class="muted"><%= member.email %> · Registriert am <%= h.formatDate(member.created_at) %> · Letzter Login: <%= h.formatDate(member.last_login_at) %></p>
+
+<div class="two-col">
+  <div>
+    <h2>Lernfortschritt</h2>
+    <% courses.forEach(c => { %>
+      <div class="card">
+        <div class="title-row"><strong><%= c.title %></strong><span class="<%= c.percent === 100 ? 'ok' : 'muted' %>"><%= c.doneLessons %>/<%= c.totalLessons %></span></div>
+        <%- include('../partials/progress', { percent: c.percent }) %>
+        <details>
+          <summary class="muted small">Lektionen anzeigen</summary>
+          <ul class="plain">
+            <% c.lessons.forEach(l => { %>
+              <li><%= l.completed_at ? '✅' : '⬜' %> <%= l.title %> <% if (l.completed_at) { %><span class="muted small">(<%= h.formatDate(l.completed_at) %>)</span><% } %></li>
+            <% }) %>
+          </ul>
+        </details>
+      </div>
+    <% }) %>
+  </div>
+  <div>
+    <h2>Daten</h2>
+    <div class="card">
+      <form method="post" action="/admin/mitarbeiter/<%= member.id %>" class="stack">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <input type="hidden" name="action" value="update">
+        <label>Name <input name="name" value="<%= member.name %>" required></label>
+        <label>E-Mail <input type="email" name="email" value="<%= member.email %>" required></label>
+        <% if (member.id !== user.id) { %>
+          <label>Rolle
+            <select name="role">
+              <option value="mitarbeiter" <%= member.role === 'mitarbeiter' ? 'selected' : '' %>>Mitarbeiter</option>
+              <option value="admin" <%= member.role === 'admin' ? 'selected' : '' %>>Admin</option>
+            </select>
+          </label>
+        <% } %>
+        <button class="btn primary">Speichern</button>
+      </form>
+    </div>
+    <div class="card">
+      <form method="post" action="/admin/mitarbeiter/<%= member.id %>" class="stack">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <input type="hidden" name="action" value="password">
+        <label>Neues Passwort setzen <input name="password" placeholder="leer = automatisch erzeugen"></label>
+        <button class="btn">Passwort zurücksetzen</button>
+      </form>
+    </div>
+    <div class="card stack">
+      <form method="post" action="/admin/mitarbeiter/<%= member.id %>" onsubmit="return confirm('Gesamten Lernfortschritt zurücksetzen?')">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <input type="hidden" name="action" value="reset-progress">
+        <button class="btn">Fortschritt zurücksetzen</button>
+      </form>
+      <% if (member.id !== user.id) { %>
+        <form method="post" action="/admin/mitarbeiter/<%= member.id %>">
+          <input type="hidden" name="_csrf" value="<%= csrf %>">
+          <input type="hidden" name="action" value="toggle">
+          <button class="btn"><%= member.active ? 'Zugang deaktivieren' : 'Zugang aktivieren' %></button>
+        </form>
+        <form method="post" action="/admin/mitarbeiter/<%= member.id %>/loeschen" onsubmit="return confirm('Mitarbeiter endgültig löschen?')">
+          <input type="hidden" name="_csrf" value="<%= csrf %>">
+          <button class="btn danger">Löschen</button>
+        </form>
+      <% } %>
+    </div>
+  </div>
+</div>
+<%- include('../partials/foot') %>

@@ -1,0 +1,63 @@
+<%- include('partials/head', { wide: true }) %>
+<div class="player-layout">
+  <aside class="sidebar card">
+    <a class="back" href="/kurse/<%= course.id %>">← <%= course.title %></a>
+    <%- include('partials/progress', { percent: course.percent }) %>
+    <div class="meta"><%= course.percent %> % abgeschlossen</div>
+    <% course.modules.forEach(m => { %>
+      <div class="side-module"><%= m.title %></div>
+      <ol class="lesson-list compact">
+        <% m.lessons.forEach(l => { %>
+          <li class="<%= l.completed_at ? 'done' : '' %> <%= l.id === lesson.id ? 'current' : '' %>">
+            <a href="/lektionen/<%= l.id %>"><span class="check"><%= l.completed_at ? '✓' : '' %></span><span class="t"><%= l.title %></span></a>
+          </li>
+        <% }) %>
+      </ol>
+    <% }) %>
+  </aside>
+
+  <article class="lesson">
+    <% const embed = h.videoEmbed(lesson.video_url); %>
+    <% if (lesson.video_file) { %>
+      <div class="video"><video src="/medien/<%= lesson.video_file %>" controls preload="metadata" controlsList="nodownload"></video></div>
+    <% } else if (embed && embed.type === 'iframe') { %>
+      <div class="video"><iframe src="<%= embed.src %>" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>
+    <% } else if (embed && embed.type === 'video') { %>
+      <div class="video"><video src="<%= embed.src %>" controls preload="metadata"></video></div>
+    <% } else if (embed) { %>
+      <p><a class="btn" href="<%= embed.src %>" target="_blank" rel="noopener">▶ Video öffnen</a></p>
+    <% } %>
+
+    <h1><%= lesson.title %></h1>
+    <% if (lesson.duration_min) { %><div class="meta">ca. <%= lesson.duration_min %> Min.</div><% } %>
+    <div class="content"><%- h.renderMarkdown(lesson.content) %></div>
+
+    <% if (attachments.length) { %>
+      <div class="card attachments">
+        <h3>Unterlagen zum Download</h3>
+        <ul>
+          <% attachments.forEach(a => { %>
+            <li><a href="/anhang/<%= a.id %>">⬇ <%= a.original_name %></a> <span class="muted"><%= h.formatBytes(a.size) %></span></li>
+          <% }) %>
+        </ul>
+      </div>
+    <% } %>
+
+    <div class="lesson-nav">
+      <% if (prev) { %><a class="btn" href="/lektionen/<%= prev.id %>">← Zurück</a><% } else { %><span></span><% } %>
+      <form method="post" action="/lektionen/<%= lesson.id %>/abschliessen" class="inline">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <% if (lesson.completed_at) { %>
+          <input type="hidden" name="done" value="0">
+          <span class="done-label">✓ Abgeschlossen</span>
+          <button class="link">rückgängig</button>
+          <% if (next) { %><a class="btn primary" href="/lektionen/<%= next.id %>">Weiter →</a><% } %>
+        <% } else { %>
+          <% if (next) { %><input type="hidden" name="next" value="<%= next.id %>"><% } %>
+          <button class="btn primary"><%= next ? 'Abschließen & weiter →' : 'Als abgeschlossen markieren ✓' %></button>
+        <% } %>
+      </form>
+    </div>
+  </article>
+</div>
+<%- include('partials/foot') %>

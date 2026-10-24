@@ -1,0 +1,8 @@
+<label>Titel <input name="title" value="<%= course.title %>" required></label>
+<label>Kategorie <input name="category" value="<%= course.category %>" placeholder="z. B. Onboarding, SEO, Social Media, Vertrieb"></label>
+<label>Beschreibung <textarea name="description" rows="3"><%= course.description %></textarea></label>
+<label>Titelbild <input type="file" name="cover" accept="image/*"></label>
+<% if (course.cover_file) { %>
+  <div class="cover-preview"><img src="/medien/<%= course.cover_file %>" alt=""><label class="check-label"><input type="checkbox" name="remove_cover" value="1"> Bild entfernen</label></div>
+<% } %>
+<label class="check-label"><input type="checkbox" name="published" value="1" <%= course.published ? 'checked' : '' %>> Veröffentlicht (für alle Mitarbeiter sichtbar)</label>

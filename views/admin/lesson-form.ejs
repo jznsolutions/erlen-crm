@@ -1,0 +1,65 @@
+<%- include('../partials/head') %>
+<% const isNew = !lesson.id; %>
+<a class="back" href="/admin/kurse/<%= course.id %>">← <%= course.title %></a>
+<div class="title-row">
+  <h1><%= isNew ? 'Neue Lektion' : lesson.title %></h1>
+  <% if (!isNew) { %><a class="btn" href="/lektionen/<%= lesson.id %>">Vorschau</a><% } %>
+</div>
+<p class="muted">Modul: <%= mod.title %></p>
+<div class="card">
+  <form method="post" action="<%= isNew ? '/admin/module/' + mod.id + '/lektionen' : '/admin/lektionen/' + lesson.id %>?_csrf=<%= csrf %>" enctype="multipart/form-data" class="stack">
+    <label>Titel <input name="title" value="<%= lesson.title %>" required></label>
+    <% if (!isNew && modules && modules.length > 1) { %>
+      <label>Modul
+        <select name="module_id">
+          <% modules.forEach(m => { %><option value="<%= m.id %>" <%= m.id === lesson.module_id ? 'selected' : '' %>><%= m.title %></option><% }) %>
+        </select>
+      </label>
+    <% } %>
+    <fieldset>
+      <legend>Video</legend>
+      <label>Video-Link <input name="video_url" value="<%= lesson.video_url %>" placeholder="YouTube, Vimeo, Loom oder direkter .mp4-Link"></label>
+      <label>… oder Videodatei hochladen <input type="file" name="video" accept="video/*"></label>
+      <% if (lesson.video_file) { %>
+        <div class="muted">Aktuell hochgeladen: <a href="/medien/<%= lesson.video_file %>" target="_blank"><%= lesson.video_file %></a>
+          <label class="check-label"><input type="checkbox" name="remove_video" value="1"> Video entfernen</label></div>
+      <% } %>
+      <p class="hint">Ein hochgeladenes Video hat Vorrang vor dem Link. Tipp: Für große Videos ist ein nicht gelistetes Vimeo-/YouTube-Video oft die bessere Wahl.</p>
+    </fieldset>
+    <label>Dauer (Minuten) <input type="number" name="duration_min" min="0" value="<%= lesson.duration_min ?? '' %>"></label>
+    <label>Inhalt / Beschreibung
+      <textarea name="content" rows="12" class="mono"><%= lesson.content %></textarea>
+    </label>
+    <p class="hint">Formatierung mit Markdown: <code>## Überschrift</code>, <code>**fett**</code>, <code>- Liste</code>, <code>[Linktext](https://…)</code></p>
+    <label>Unterlagen anhängen (PDF, Vorlagen, Präsentationen …) <input type="file" name="attachments" multiple></label>
+    <button class="btn primary"><%= isNew ? 'Lektion anlegen' : 'Speichern' %></button>
+  </form>
+</div>
+
+<% if (attachments.length) { %>
+  <div class="card">
+    <h3>Angehängte Unterlagen</h3>
+    <table>
+      <% attachments.forEach(a => { %>
+        <tr>
+          <td><a href="/anhang/<%= a.id %>"><%= a.original_name %></a></td>
+          <td class="muted"><%= h.formatBytes(a.size) %></td>
+          <td class="row-actions">
+            <form method="post" action="/admin/anhaenge/<%= a.id %>/loeschen" class="inline">
+              <input type="hidden" name="_csrf" value="<%= csrf %>">
+              <button class="icon danger" title="Entfernen">🗑</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </table>
+  </div>
+<% } %>
+
+<% if (!isNew) { %>
+  <form method="post" action="/admin/lektionen/<%= lesson.id %>/loeschen" onsubmit="return confirm('Lektion löschen?')">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <button class="btn danger">Lektion löschen</button>
+  </form>
+<% } %>
+<%- include('../partials/foot') %>

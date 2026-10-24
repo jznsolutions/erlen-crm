@@ -1,0 +1,43 @@
+<%- include('../partials/head', { wide: true }) %>
+<h1>Mitarbeiter & Fortschritt</h1>
+<%- include('../partials/admin-nav') %>
+
+<div class="card">
+  <h3>Mitarbeiter anlegen</h3>
+  <form method="post" action="/admin/mitarbeiter" class="inline-form wrap">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <input name="name" placeholder="Name" required>
+    <input type="email" name="email" placeholder="E-Mail" required>
+    <input name="password" placeholder="Passwort (leer = automatisch)">
+    <select name="role"><option value="mitarbeiter">Mitarbeiter</option><option value="admin">Admin</option></select>
+    <button class="btn primary">Anlegen</button>
+  </form>
+  <p class="hint">Die Zugangsdaten werden nach dem Anlegen einmalig angezeigt – gib sie an die Person weiter.</p>
+</div>
+
+<div class="card scroll-x">
+  <table class="matrix">
+    <thead>
+      <tr>
+        <th>Name</th><th>Rolle</th><th>Letzter Login</th>
+        <% courses.forEach(c => { %><th class="course-col"><%= c.title %></th><% }) %>
+      </tr>
+    </thead>
+    <tbody>
+      <% users.forEach(u => { %>
+        <tr class="<%= u.active ? '' : 'inactive' %>">
+          <td><a href="/admin/mitarbeiter/<%= u.id %>"><strong><%= u.name %></strong></a><br><span class="muted small"><%= u.email %></span></td>
+          <td><%= u.role === 'admin' ? 'Admin' : 'Mitarbeiter' %><%= u.active ? '' : ' (inaktiv)' %></td>
+          <td class="muted"><%= h.formatDate(u.last_login_at) %></td>
+          <% courses.forEach(c => { const p = (matrix[u.id] || {})[c.id] || { percent: 0 }; %>
+            <td class="course-col">
+              <%- include('../partials/progress', { percent: p.percent }) %>
+              <span class="small <%= p.percent === 100 ? 'ok' : 'muted' %>"><%= p.percent %> %</span>
+            </td>
+          <% }) %>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<%- include('../partials/foot') %>

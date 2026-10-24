@@ -1,0 +1,23 @@
+<%- include('../partials/head') %>
+<h1>Admin</h1>
+<%- include('../partials/admin-nav') %>
+<div class="stats">
+  <div class="card stat"><strong><%= stats.courses %></strong><span>Kurse</span></div>
+  <div class="card stat"><strong><%= stats.lessons %></strong><span>Lektionen</span></div>
+  <div class="card stat"><strong><%= stats.users %></strong><span>aktive Mitarbeiter</span></div>
+  <div class="card stat"><strong><%= stats.completions %></strong><span>abgeschlossene Lektionen (7 Tage)</span></div>
+</div>
+<div class="actions">
+  <a class="btn primary" href="/admin/kurse/neu">+ Neuer Kurs</a>
+  <a class="btn" href="/admin/mitarbeiter">+ Mitarbeiter einladen</a>
+</div>
+<div class="card">
+  <h3>Letzte Aktivität</h3>
+  <% if (!recent.length) { %><p class="muted">Noch keine abgeschlossenen Lektionen.</p><% } %>
+  <table>
+    <% recent.forEach(r => { %>
+      <tr><td><%= r.name %></td><td><%= r.lesson %> <span class="muted">(<%= r.course %>)</span></td><td class="muted"><%= h.formatDate(r.completed_at) %></td></tr>
+    <% }) %>
+  </table>
+</div>
+<%- include('../partials/foot') %>

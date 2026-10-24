@@ -1,0 +1,30 @@
+<%- include('../partials/head') %>
+<h1>Kurse & Inhalte</h1>
+<%- include('../partials/admin-nav') %>
+<div class="actions"><a class="btn primary" href="/admin/kurse/neu">+ Neuer Kurs</a></div>
+<div class="card">
+  <% if (!courses.length) { %><p class="muted">Noch keine Kurse.</p><% } %>
+  <table>
+    <thead><tr><th>Kurs</th><th>Kategorie</th><th>Inhalt</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    <% courses.forEach((c, i) => { %>
+      <tr>
+        <td><a href="/admin/kurse/<%= c.id %>"><strong><%= c.title %></strong></a></td>
+        <td><%= c.category || '–' %></td>
+        <td class="muted"><%= c.modules.length %> Module · <%= c.totalLessons %> Lektionen</td>
+        <td><%= c.published ? 'Veröffentlicht' : 'Entwurf' %></td>
+        <td class="row-actions">
+          <form method="post" action="/admin/kurse/<%= c.id %>/verschieben" class="inline">
+            <input type="hidden" name="_csrf" value="<%= csrf %>">
+            <button name="dir" value="up" class="icon" <%= i === 0 ? 'disabled' : '' %> title="nach oben">↑</button>
+            <button name="dir" value="down" class="icon" <%= i === courses.length - 1 ? 'disabled' : '' %> title="nach unten">↓</button>
+          </form>
+          <a class="btn small" href="/admin/kurse/<%= c.id %>">Bearbeiten</a>
+          <a class="btn small" href="/kurse/<%= c.id %>">Vorschau</a>
+        </td>
+      </tr>
+    <% }) %>
+    </tbody>
+  </table>
+</div>
+<%- include('../partials/foot') %>

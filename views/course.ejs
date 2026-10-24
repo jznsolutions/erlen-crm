@@ -1,0 +1,38 @@
+<%- include('partials/head') %>
+<a class="back" href="/">← Alle Kurse</a>
+<div class="course-head card">
+  <div class="cover large" <% if (course.cover_file) { %>style="background-image: url('/medien/<%= course.cover_file %>')"<% } %>>
+    <% if (!course.cover_file) { %><span><%= course.title.charAt(0) %></span><% } %>
+  </div>
+  <div class="info">
+    <% if (course.category) { %><div class="eyebrow"><%= course.category %></div><% } %>
+    <h1><%= course.title %></h1>
+    <% if (!course.published) { %><p class="badge draft inline-badge">Entwurf – nur für Admins sichtbar</p><% } %>
+    <p><%= course.description %></p>
+    <div class="meta"><%= course.modules.length %> Module · <%= course.totalLessons %> Lektionen<% if (course.totalMinutes) { %> · ca. <%= course.totalMinutes %> Min.<% } %></div>
+    <%- include('partials/progress', { percent: course.percent }) %>
+    <div class="meta"><%= course.doneLessons %> von <%= course.totalLessons %> Lektionen abgeschlossen</div>
+    <% if (next) { %>
+      <a class="btn primary" href="/lektionen/<%= next.id %>"><%= course.doneLessons === 0 ? 'Kurs starten' : course.percent === 100 ? 'Erneut ansehen' : 'Weitermachen' %> →</a>
+    <% } %>
+  </div>
+</div>
+
+<% course.modules.forEach((m, mi) => { %>
+  <section class="module card">
+    <h3><span class="muted">Modul <%= mi + 1 %></span> · <%= m.title %></h3>
+    <% if (!m.lessons.length) { %><p class="muted">Noch keine Lektionen.</p><% } %>
+    <ol class="lesson-list">
+      <% m.lessons.forEach(l => { %>
+        <li class="<%= l.completed_at ? 'done' : '' %>">
+          <a href="/lektionen/<%= l.id %>">
+            <span class="check"><%= l.completed_at ? '✓' : '' %></span>
+            <span class="t"><%= l.title %></span>
+            <span class="muted"><%= (l.video_url || l.video_file) ? '▶ Video' : 'Text' %><% if (l.duration_min) { %> · <%= l.duration_min %> Min.<% } %></span>
+          </a>
+        </li>
+      <% }) %>
+    </ol>
+  </section>
+<% }) %>
+<%- include('partials/foot') %>
