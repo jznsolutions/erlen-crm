@@ -1,0 +1,15 @@
+<%- include('partials/head') %>
+<div class="login-wrap">
+  <div class="card narrow">
+    <div class="brand big"><span class="logo">▶</span> <%= appName %></div>
+    <p class="muted">Melde dich mit deinem Mitarbeiter-Zugang an.</p>
+    <form method="post" action="/login" class="stack">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <input type="hidden" name="weiter" value="<%= weiter %>">
+      <label>E-Mail <input type="email" name="email" value="<%= email %>" required autofocus></label>
+      <label>Passwort <input type="password" name="password" required></label>
+      <button class="btn primary">Anmelden</button>
+    </form>
+  </div>
+</div>
+<%- include('partials/foot') %>

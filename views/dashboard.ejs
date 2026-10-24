@@ -1,0 +1,39 @@
+<%- include('partials/head') %>
+<div class="hero">
+  <div>
+    <h1>Hallo <%= user.name.split(' ')[0] %> 👋</h1>
+    <p class="muted">Hier findest du alle Schulungen, Videos und Unterlagen der Agentur.</p>
+  </div>
+  <form method="get" action="/" class="search">
+    <input type="search" name="q" value="<%= q %>" placeholder="Kurse & Lektionen durchsuchen …">
+  </form>
+</div>
+
+<% if (!q && inProgress.length) { %>
+  <h2>Weitermachen</h2>
+  <div class="continue-list">
+    <% inProgress.forEach(c => { const n = c.lessons.find(l => !l.completed_at); %>
+      <a class="continue" href="/lektionen/<%= n.id %>">
+        <div>
+          <div class="eyebrow"><%= c.title %></div>
+          <strong><%= n.title %></strong>
+        </div>
+        <div class="right"><%= c.percent %> %<%- include('partials/progress', { percent: c.percent }) %></div>
+      </a>
+    <% }) %>
+  </div>
+<% } %>
+
+<% if (!courses.length) { %>
+  <div class="card center muted"><%= q ? 'Keine Treffer für „' + q + '“.' : 'Noch keine Kurse veröffentlicht.' %></div>
+<% } %>
+
+<% categories.forEach(cat => { %>
+  <h2><%= cat %></h2>
+  <div class="grid">
+    <% courses.filter(c => (c.category || 'Allgemein') === cat).forEach(c => { %>
+      <%- include('partials/course-card', { c }) %>
+    <% }) %>
+  </div>
+<% }) %>
+<%- include('partials/foot') %>

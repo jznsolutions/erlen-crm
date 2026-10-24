@@ -1,0 +1,15 @@
+<a class="course-card" href="/kurse/<%= c.id %>">
+  <div class="cover" <% if (c.cover_file) { %>style="background-image: url('/medien/<%= c.cover_file %>')"<% } %>>
+    <% if (!c.cover_file) { %><span><%= c.title.charAt(0) %></span><% } %>
+    <% if (!c.published) { %><em class="badge draft">Entwurf</em><% } %>
+    <% if (c.percent === 100) { %><em class="badge done">✓ Abgeschlossen</em><% } %>
+  </div>
+  <div class="body">
+    <% if (c.category) { %><div class="eyebrow"><%= c.category %></div><% } %>
+    <h3><%= c.title %></h3>
+    <p class="muted clamp"><%= c.description %></p>
+    <div class="meta"><%= c.totalLessons %> Lektionen<% if (c.totalMinutes) { %> · <%= c.totalMinutes %> Min.<% } %></div>
+    <%- include('progress', { percent: c.percent }) %>
+    <div class="meta"><%= c.percent %> % abgeschlossen</div>
+  </div>
+</a>

@@ -1,0 +1,14 @@
+<%- include('partials/head') %>
+<h1>Profil</h1>
+<div class="card narrow">
+  <p><strong><%= user.name %></strong><br><span class="muted"><%= user.email %> · <%= user.role === 'admin' ? 'Admin' : 'Mitarbeiter' %></span></p>
+  <h3>Passwort ändern</h3>
+  <form method="post" action="/profil/passwort" class="stack">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <label>Aktuelles Passwort <input type="password" name="current" required></label>
+    <label>Neues Passwort <input type="password" name="password" minlength="8" required></label>
+    <label>Neues Passwort wiederholen <input type="password" name="password2" minlength="8" required></label>
+    <button class="btn primary">Speichern</button>
+  </form>
+</div>
+<%- include('partials/foot') %>

@@ -1,0 +1,5 @@
+<nav class="subnav">
+  <a href="/admin" class="<%= path === '/admin' || path === '/admin/' ? 'active' : '' %>">Übersicht</a>
+  <a href="/admin/kurse" class="<%= path.startsWith('/admin/kurse') || path.startsWith('/admin/module') || path.startsWith('/admin/lektionen') ? 'active' : '' %>">Kurse & Inhalte</a>
+  <a href="/admin/mitarbeiter" class="<%= path.startsWith('/admin/mitarbeiter') ? 'active' : '' %>">Mitarbeiter & Fortschritt</a>
+</nav>

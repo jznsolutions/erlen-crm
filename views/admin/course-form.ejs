@@ -1,0 +1,10 @@
+<%- include('../partials/head') %>
+<a class="back" href="/admin/kurse">← Kurse</a>
+<h1>Neuer Kurs</h1>
+<div class="card narrow">
+  <form method="post" action="/admin/kurse?_csrf=<%= csrf %>" enctype="multipart/form-data" class="stack">
+    <%- include('course-fields') %>
+    <button class="btn primary">Kurs anlegen</button>
+  </form>
+</div>
+<%- include('../partials/foot') %>

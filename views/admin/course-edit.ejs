@@ -1,0 +1,67 @@
+<%- include('../partials/head') %>
+<a class="back" href="/admin/kurse">← Kurse</a>
+<div class="title-row">
+  <h1><%= course.title %></h1>
+  <a class="btn" href="/kurse/<%= course.id %>">Vorschau ansehen</a>
+</div>
+
+<div class="two-col">
+  <div>
+    <h2>Module & Lektionen</h2>
+    <% course.modules.forEach((m, mi) => { %>
+      <section class="card module-admin">
+        <div class="module-head">
+          <form method="post" action="/admin/module/<%= m.id %>" class="inline grow">
+            <input type="hidden" name="_csrf" value="<%= csrf %>">
+            <span class="muted">Modul <%= mi + 1 %></span>
+            <input name="title" value="<%= m.title %>" class="inline-input">
+            <button class="btn small">Umbenennen</button>
+          </form>
+          <form method="post" action="/admin/module/<%= m.id %>" class="inline">
+            <input type="hidden" name="_csrf" value="<%= csrf %>">
+            <button name="dir" value="up" class="icon" <%= mi === 0 ? 'disabled' : '' %>>↑</button>
+            <button name="dir" value="down" class="icon" <%= mi === course.modules.length - 1 ? 'disabled' : '' %>>↓</button>
+          </form>
+          <form method="post" action="/admin/module/<%= m.id %>/loeschen" class="inline" onsubmit="return confirm('Modul inkl. aller Lektionen löschen?')">
+            <input type="hidden" name="_csrf" value="<%= csrf %>">
+            <button class="icon danger" title="Modul löschen">🗑</button>
+          </form>
+        </div>
+        <ol class="lesson-list admin">
+          <% m.lessons.forEach((l, li) => { %>
+            <li>
+              <a href="/admin/lektionen/<%= l.id %>" class="t"><%= l.title %></a>
+              <span class="muted"><%= l.video_file ? '▶ Upload' : l.video_url ? '▶ Link' : 'Text' %></span>
+              <form method="post" action="/admin/lektionen/<%= l.id %>/verschieben" class="inline">
+                <input type="hidden" name="_csrf" value="<%= csrf %>">
+                <button name="dir" value="up" class="icon" <%= li === 0 ? 'disabled' : '' %>>↑</button>
+                <button name="dir" value="down" class="icon" <%= li === m.lessons.length - 1 ? 'disabled' : '' %>>↓</button>
+              </form>
+            </li>
+          <% }) %>
+        </ol>
+        <a class="btn small" href="/admin/module/<%= m.id %>/lektionen/neu">+ Lektion hinzufügen</a>
+      </section>
+    <% }) %>
+    <form method="post" action="/admin/kurse/<%= course.id %>/module" class="card inline-form">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <input name="title" placeholder="Name des neuen Moduls" required>
+      <button class="btn primary">+ Modul</button>
+    </form>
+  </div>
+
+  <div>
+    <h2>Kurs-Einstellungen</h2>
+    <div class="card">
+      <form method="post" action="/admin/kurse/<%= course.id %>?_csrf=<%= csrf %>" enctype="multipart/form-data" class="stack">
+        <%- include('course-fields') %>
+        <button class="btn primary">Speichern</button>
+      </form>
+    </div>
+    <form method="post" action="/admin/kurse/<%= course.id %>/loeschen" onsubmit="return confirm('Kurs mit allen Inhalten unwiderruflich löschen?')">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <button class="btn danger">Kurs löschen</button>
+    </form>
+  </div>
+</div>
+<%- include('../partials/foot') %>

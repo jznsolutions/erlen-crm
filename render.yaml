@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: agentur-akademie
+    runtime: node
+    plan: starter
+    branch: feature/lernplattform
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /login
+    disk:
+      name: akademie-daten
+      mountPath: /var/data
+      sizeGB: 10
+    envVars:
+      - key: DATA_DIR
+        value: /var/data
+      - key: SECURE_COOKIES
+        value: "true"
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: APP_NAME
+        value: Agentur Akademie
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
